@@ -1,6 +1,6 @@
 from random import randint
 
-from utils import check_sum
+from utils import check_sum, ones_complement
 
 from rdt_packet import RdtPacket
 from machine_states import FSM
@@ -28,7 +28,7 @@ def init_process():
     alice_packet = RdtPacket(
         sequence_number=randint(1, 99999),
         ack_num=0,
-        check_sum=0,
+        check_sum=ones_complement(check_sum(payload)),
         payload=payload
     )
 
@@ -40,5 +40,5 @@ def init_process():
 # def send_packet():
 #     return ''
 
-
+init_process()
 print(check_sum(payload))
