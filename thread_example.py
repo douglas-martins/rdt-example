@@ -7,7 +7,7 @@ from sender import SenderClass
 from receiver import ReceiverClass
 
 check = threading.Condition()
-packet: RdtPacket
+packet = None
 bob_rcv: RdtPacket
 message = "Mensagem para "
 sender = SenderClass(message)
@@ -64,6 +64,9 @@ def alice_routine():
 
     default_sender() # Faz o segundo pacote e envia
 
+    default_sender()  # Faz o segundo pacote e envia
+
+
 
 def bob_routine():
     global packet
@@ -71,6 +74,7 @@ def bob_routine():
     global receiver
 
     check.acquire()
+    check.wait_for(predicate=lambda: packet is not None)
 
     receiver = ReceiverClass(packet)
     bob_rcv = receiver.finite_machine() # Recebe o pacote (ack 0) e envia um ack ou nack dependendo do que recebeu
@@ -79,6 +83,17 @@ def bob_routine():
     check.release()
 
     default_receiver() # Recebe o pacote (ack 1) e envia um ack ou nack dependendo do que recebeu
+
+    check.acquire()
+    check.wait()
+
+    receiver.force_nack("teste")
+    bob_rcv = receiver.finite_machine()
+
+    check.notify()
+    check.release()
+
+    default_receiver()
 
     default_receiver()
 
