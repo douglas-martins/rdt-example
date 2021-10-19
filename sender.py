@@ -28,10 +28,10 @@ class SenderClass:
 
     def __get_five_characters__(self) -> List[str]:
         payload = self.data[:5]
-        self.full_data = self.data[5:]
+        self.data = self.data[5:]
         return payload
 
-    def finit_machine(self):
+    def finite_machine(self):
         if self.state == FSM.STATE_ONE:
             self.make_pkt()
             self.send_pkt()

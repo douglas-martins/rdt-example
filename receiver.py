@@ -20,7 +20,7 @@ class ReceiverClass:
             payload=list(is_ack)
         )
 
-    def finit_machine(self):
+    def finite_machine(self):
         if self.state == FSM.STATE_ONE:
             if validate_pkt(self.pkt):
                 is_ack = 'ACK'
