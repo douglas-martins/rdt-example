@@ -23,7 +23,7 @@ def ones_complement(binary_str: str):
     return binary_str.replace('1', 'x').replace('0', '1').replace('x', '0')
 
 
-def validate_pkt(pkt_to_validate) -> bool:
+def validate_pkt(pkt_to_validate: RdtPacket) -> bool:
     cs = check_sum(pkt_to_validate.get_payload())
     print(cs)
     print(pkt_to_validate.get_check_sum())

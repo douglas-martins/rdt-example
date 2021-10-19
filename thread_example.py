@@ -1,46 +1,65 @@
 import threading
 from threading import Thread
 import time
+from math import ceil
 
 from machine_states import FSM
 from rdt_packet import RdtPacket
+from sender import SenderClass
+from receiver import ReceiverClass
 
 check = threading.Condition()
 alice_state = FSM.STATE_ONE
 bob_state = FSM.STATE_ONE
 packet: RdtPacket
+bob_rcv: RdtPacket
+message = "Mensagem para bob"
 
 
 def alice_routine():
     global packet
+    global bob_rcv
+    global message
+    sender = SenderClass(message)
     print("Alice will send a packet")
-    packet = RdtPacket(
-        sequence_number=0,
-        ack_num=0,
-        check_sum=0,
-        payload=['x', 'x', 't', 'p', 'v']
-    )
-    print(packet)
+    packet = sender.finite_machine()
+
     check.acquire()
     check.wait()
 
-    if packet.get_ack_num() == 1:
-        print("\nAlice recieved ACK")
+    for a in range(0, ceil(len(message)/5)):
+        sender.set_rcv_pkt(bob_rcv)
+        packet = sender.finite_machine()
+        packet = sender.finite_machine()
+
+        check.notify()
+        check.release()
+        check.acquire()
+        check.wait()
 
 
 def bob_routine():
     global packet
-    print("Bob received a alice packet")
+    global bob_rcv
     check.acquire()
-    time.sleep(2)  # ou faz a lógica para verificar se o pacote está corrupto ou não
-    alice_state = FSM.STATE_TWO
-    print("Bob modify packet to send (if necessary)")
-    packet.set_sequence_number(packet.get_sequence_number() + 1)
-    packet.set_ack_num(1)
-    print(packet)
+
+    receiver = ReceiverClass(packet)
+    receiver.finite_machine()
+    bob_rcv = receiver.send_ack()
+
     check.notify()
     check.release()
-    print("Bob send ACK to Alice")
+    print(ceil(len(message) / 5))
+    for a in range(0, ceil(len(message) / 5)):
+        check.acquire()
+        check.wait()
+
+        receiver = ReceiverClass(packet)
+        receiver.finite_machine()
+        bob_rcv = receiver.send_ack()
+
+        check.notify()
+        check.release()
 
 
 Thread(target=alice_routine).start()

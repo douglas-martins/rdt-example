@@ -10,6 +10,7 @@ class SenderClass:
         self.state = FSM.STATE_ONE
         self.data = data
         self.last_pkt = RdtPacket
+        self.rcv_pkt = RdtPacket
         self.seq_num = 0
 
     def make_pkt(self):
@@ -23,7 +24,9 @@ class SenderClass:
         self.seq_num += 1
 
     def send_pkt(self):
-        # Envia o pacote para a Thread B
+        print("## Enviando pacote ##")
+        print(self.last_pkt)
+        print("#####################")
         return self.last_pkt
 
     def __get_five_characters__(self) -> List[str]:
@@ -34,30 +37,31 @@ class SenderClass:
     def finite_machine(self):
         if self.state == FSM.STATE_ONE:
             self.make_pkt()
-            self.send_pkt()
             self.state = FSM.STATE_TWO
+            return self.send_pkt()
 
         elif self.state == FSM.STATE_TWO:
-            '''if not validate_pkt() or 'NACK' == 'NACK':
-                self.send_pkt()
+            if not validate_pkt(self.rcv_pkt) or ''.join(self.rcv_pkt.get_payload()) == 'nack':
+                return self.send_pkt()
             else:
-                self.state = FSM.STATE_THREE'''
+                self.state = FSM.STATE_THREE
 
-            print(self.state)
+            return None
 
         elif self.state == FSM.STATE_THREE:
-            # Ainda não sei se não apenas deixar os estados ONE e TWO
             self.last_pkt.set_ack_num(ack_num=1)
-            self.send_pkt()
             self.state = FSM.STATE_FOR
+            return self.send_pkt()
 
         elif self.state == FSM.STATE_FOR:
-            '''if not validate_pkt() or 'NACK' == 'NACK':
-                self.send_pkt()
+            if not validate_pkt(self.rcv_pkt) or ''.join(self.rcv_pkt.get_payload()) == 'nack':
+                return self.send_pkt()
             else:
-                self.state = FSM.STATE_ONE'''
+                self.state = FSM.STATE_ONE
+            return None
 
-            print(self.state)
+    def set_rcv_pkt(self, rcv_pkt: RdtPacket):
+        self.rcv_pkt = rcv_pkt
 
 
 send = SenderClass("Mensage completa da Alice para o Bob")
