@@ -35,6 +35,7 @@ class ReceiverClass:
                 is_ack = 'nack'
 
             self.make_pkt(is_ack)
+            return self.send_ack()
         elif self.state == FSM.STATE_TWO:
             if validate_pkt(self.pkt):
                 is_ack = 'ACK'
@@ -44,6 +45,7 @@ class ReceiverClass:
                 is_ack = 'NACK'
 
             self.make_pkt(is_ack)
+            return self.send_ack()
         else:
             print("RESET")
 

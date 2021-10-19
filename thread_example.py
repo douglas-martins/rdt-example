@@ -38,8 +38,7 @@ def default_receiver():
     check.wait()
 
     receiver = ReceiverClass(packet)
-    receiver.finite_machine()
-    bob_rcv = receiver.send_ack()
+    bob_rcv = receiver.finite_machine()
 
     check.notify()
     check.release()
@@ -55,15 +54,15 @@ def alice_routine():
     check.acquire()
     check.wait()
 
-    default_sender()
+    default_sender() # Faz o primeiro pacote e envia
 
-    default_sender()
+    default_sender() # Recebe o pacote de resposta de quem recebeu
 
-    default_sender()
+    default_sender() # Envia o pacote novamente como ack_num 1
 
-    default_sender()
+    default_sender() # Recebe o pacote de resposta de quem recebeu
 
-    default_sender()
+    default_sender() # Faz o segundo pacote e envia
 
 
 def bob_routine():
@@ -74,16 +73,19 @@ def bob_routine():
     check.acquire()
 
     receiver = ReceiverClass(packet)
-    receiver.finite_machine()
-    bob_rcv = receiver.send_ack()
+    bob_rcv = receiver.finite_machine() # Recebe o pacote (ack 0) e envia um ack ou nack dependendo do que recebeu
 
     check.notify()
     check.release()
 
+    default_receiver() # Recebe o pacote (ack 1) e envia um ack ou nack dependendo do que recebeu
+
     default_receiver()
+
     default_receiver()
+
     default_receiver()
-    default_receiver()
+
     default_receiver()
 
 
