@@ -1,2 +1,2 @@
 # rdt-example
-Study RTP protocol with Python
+Study RDT protocol with Python
