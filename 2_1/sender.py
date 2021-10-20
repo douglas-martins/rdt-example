@@ -24,9 +24,7 @@ class SenderClass:
         self.seq_num += 1
 
     def send_pkt(self):
-        print("## Enviando pacote ##")
-        print(self.last_pkt)
-        print("#####################")
+        print("---- ENVIANDO PACOTE ----")
         return self.last_pkt
 
     def __get_five_characters__(self) -> List[str]:
@@ -37,6 +35,7 @@ class SenderClass:
     def finite_machine(self):
         if self.state == FSM.STATE_ONE:
             self.make_pkt()
+            print('---- ack 0 ----')
             self.state = FSM.STATE_TWO
             return self.send_pkt()
 
@@ -49,6 +48,7 @@ class SenderClass:
             return None
 
         elif self.state == FSM.STATE_THREE:
+            print('---- ack 1 ----')
             self.last_pkt.set_ack_num(ack_num=1)
             self.state = FSM.STATE_FOR
             return self.send_pkt()
@@ -59,6 +59,12 @@ class SenderClass:
             else:
                 self.state = FSM.STATE_ONE
             return None
+
+    def report(self):
+        print("---- sender ----")
+        print("Estado atual: " + str(self.state))
+        print("Pacote de envio: " + str(self.last_pkt))
+        print("------------------")
 
     def set_rcv_pkt(self, rcv_pkt: RdtPacket):
         self.rcv_pkt = rcv_pkt

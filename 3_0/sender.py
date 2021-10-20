@@ -26,9 +26,7 @@ class SenderClass:
         self.seq_num += 1
 
     def send_pkt(self):
-        print("## Enviando pacote ##")
-        print(self.last_pkt)
-        print("#####################")
+        print("---- ENVIANDO PACOTE ----")
         return self.last_pkt
 
     def __get_five_characters__(self) -> List[str]:
@@ -44,10 +42,8 @@ class SenderClass:
         return seconds > 5
 
     def finite_machine(self):
-        print("SENDER")
-        print(self.state)
-        print("#######")
         if self.state == FSM.STATE_ONE:
+            print('---- ack 0 ----')
             self.make_pkt()
             self.state = FSM.STATE_TWO
             return self.send_pkt()
@@ -56,7 +52,9 @@ class SenderClass:
             is_corrupted = not validate_pkt(self.rcv_pkt)
 
             if self.time_out():
-                print("### TIME OUT NEAN BAH ###")
+                print("---- TIME OUT ----")
+                print('Time Stamp Pacote: ' + str(self.last_pkt.get_time_stamp()))
+                print('Agora: ' + str(datetime.now()))
                 self.last_pkt.set_time_stamp(datetime.now())
                 return self.send_pkt()
 
@@ -68,6 +66,7 @@ class SenderClass:
             return self.last_pkt
 
         elif self.state == FSM.STATE_THREE:
+            print('---- ack 1 ----')
             self.last_pkt.set_ack_num(ack_num=1)
             self.last_pkt.set_time_stamp(datetime.now())
             self.state = FSM.STATE_FOR
@@ -77,7 +76,6 @@ class SenderClass:
             is_corrupted = not validate_pkt(self.rcv_pkt)
 
             if self.time_out():
-                print("### TIME OUT NEAN BAH ###")
                 self.last_pkt.set_time_stamp(datetime.now())
                 return self.send_pkt()
 
@@ -87,6 +85,12 @@ class SenderClass:
                 self.state = FSM.STATE_ONE
 
             return self.last_pkt
+
+    def report(self):
+        print("---- sender ----")
+        print("Estado atual: " + str(self.state))
+        print("Pacote de envio: " + str(self.last_pkt))
+        print("------------------")
 
     def set_rcv_pkt(self, rcv_pkt: RdtPacket):
         self.rcv_pkt = rcv_pkt

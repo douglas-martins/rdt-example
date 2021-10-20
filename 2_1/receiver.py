@@ -21,7 +21,6 @@ class ReceiverClass:
         )
 
     def send_ack(self):
-        print('Enviando ' + ''.join(self.pkt_to_send.get_payload()) + " de resposta")
         return self.pkt_to_send
 
     def set_pkt(self, pkt):
@@ -30,26 +29,38 @@ class ReceiverClass:
     def finite_machine(self):
         if self.state == FSM.STATE_ONE:
             if validate_pkt(self.pkt):
+                print('---- ACK ----')
                 is_ack = 'ack'
                 if self.pkt.get_ack_num() == 0:
                     self.state = FSM.STATE_TWO
             else:
+                print('---- NACK ----')
+                print('Pacote recebido: ' + str(self.pkt))
                 is_ack = 'nack'
 
             self.make_pkt(is_ack)
             return self.send_ack()
         elif self.state == FSM.STATE_TWO:
             if validate_pkt(self.pkt):
+                print('---- ACK ----')
                 is_ack = 'ack'
                 if self.pkt.get_ack_num() == 1:
                     self.state = FSM.STATE_ONE
             else:
+                print('---- NACK ----')
+                print('Pacote recebido: ' + str(self.pkt))
                 is_ack = 'nack'
 
             self.make_pkt(is_ack)
             return self.send_ack()
         else:
             print("RESET")
+
+    def report(self):
+        print("---- receiver ----")
+        print("Estado atual: " + str(self.state))
+        print("Pacote de envio: " + str(self.pkt_to_send))
+        print("------------------")
 
     def force_nack(self, fake_payload):
         self.pkt.set_payload(fake_payload)

@@ -3,13 +3,13 @@ import time
 from threading import Thread
 
 from rdt_packet import RdtPacket
-from tres.sender import SenderClass
-from dois.receiver import ReceiverClass
+from sender import SenderClass
+from receiver import ReceiverClass
 
 check = threading.Condition()
 packet = None
 bob_rcv: RdtPacket
-message = "Mensagem para "
+message = "Mensagem teste"
 sender = SenderClass(message)
 receiver: ReceiverClass
 
@@ -21,7 +21,9 @@ def default_sender():
 
     sender.set_rcv_pkt(bob_rcv)
     packet = sender.finite_machine()
+    sender.report()
     packet = sender.finite_machine()
+    sender.report()
 
     check.notify()
     check.release()
@@ -39,6 +41,7 @@ def default_receiver():
 
     receiver.set_pkt(packet)
     bob_rcv = receiver.finite_machine()
+    receiver.report()
 
     check.notify()
     check.release()
@@ -53,16 +56,16 @@ def alice_routine():
 
     check.acquire()
     check.wait()
-    time.sleep(10)
-    default_sender() # Faz o primeiro pacote e envia
 
-    default_sender() # Recebe o pacote de resposta de quem recebeu
+    default_sender()  # Faz o primeiro pacote e envia
 
-    default_sender() # Envia o pacote novamente como ack_num 1
+    default_sender()  # Recebe o pacote de resposta de quem recebeu
 
-    default_sender() # Recebe o pacote de resposta de quem recebeu
+    default_sender()  # Envia o pacote novamente como ack_num 1
 
-    default_sender() # Faz o segundo pacote e envia
+    default_sender()  # Recebe o pacote de resposta de quem recebeu
+
+    default_sender()  # Faz o segundo pacote e envia
 
     default_sender()  # Faz o segundo pacote e envia
 
@@ -76,18 +79,22 @@ def bob_routine():
     check.wait_for(predicate=lambda: packet is not None)
 
     receiver = ReceiverClass(packet)
-    bob_rcv = receiver.finite_machine() # Recebe o pacote (ack 0) e envia um ack ou nack dependendo do que recebeu
+
+    receiver.report()
+    bob_rcv = receiver.finite_machine()  # Recebe o pacote (ack 0) e envia 2_1 ack ou nack dependendo do que recebeu
+    receiver.report()
 
     check.notify()
     check.release()
 
-    default_receiver() # Recebe o pacote (ack 1) e envia um ack ou nack dependendo do que recebeu
+    default_receiver()  # Recebe o pacote (ack 1) e envia 2_1 ack ou nack dependendo do que recebeu
 
     check.acquire()
     check.wait()
 
     receiver.force_nack("teste")
     bob_rcv = receiver.finite_machine()
+    receiver.report()
 
     check.notify()
     check.release()
