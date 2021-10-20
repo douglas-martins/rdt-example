@@ -7,11 +7,12 @@ class RdtPacket:
     check_sum: int
     payload: List[str]
 
-    def __init__(self, sequence_number: int, ack_num: int, check_sum: int, payload: List[str]):
+    def __init__(self, sequence_number: int, ack_num: int, check_sum: int, payload: List[str], time_stamp=None):
         self.sequence_number = sequence_number
         self.ack_num = ack_num
         self.check_sum = check_sum
         self.payload = payload
+        self.time_stamp = time_stamp
 
     def get_sequence_number(self):
         return self.sequence_number
@@ -25,6 +26,9 @@ class RdtPacket:
     def get_payload(self):
         return self.payload
 
+    def get_time_stamp(self):
+        return self.time_stamp
+
     def set_sequence_number(self, sequence_number):
         self.sequence_number = sequence_number
 
@@ -36,6 +40,9 @@ class RdtPacket:
 
     def set_payload(self, payload):
         self.payload = payload
+
+    def set_time_stamp(self, time_stamp):
+        self.time_stamp = time_stamp
 
     def __str__(self):
         return f"RdtPacket:[sequence_number:{self.sequence_number}, ack_num:{self.ack_num}, check_sum:{self.check_sum}," \

@@ -62,7 +62,3 @@ class SenderClass:
 
     def set_rcv_pkt(self, rcv_pkt: RdtPacket):
         self.rcv_pkt = rcv_pkt
-
-
-send = SenderClass("Mensage completa da Alice para o Bob")
-send.make_pkt()

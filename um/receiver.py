@@ -1,7 +1,6 @@
 from machine_states import FSM
 from rdt_packet import RdtPacket
 from utils import ones_complement, check_sum, validate_pkt
-from sender import SenderClass
 import copy
 
 
@@ -25,6 +24,9 @@ class ReceiverClass:
         print('Enviando ' + ''.join(self.pkt_to_send.get_payload()) + " de resposta")
         return self.pkt_to_send
 
+    def set_pkt(self, pkt):
+        self.pkt = pkt
+
     def finite_machine(self):
         if self.state == FSM.STATE_ONE:
             if validate_pkt(self.pkt):
@@ -38,11 +40,11 @@ class ReceiverClass:
             return self.send_ack()
         elif self.state == FSM.STATE_TWO:
             if validate_pkt(self.pkt):
-                is_ack = 'ACK'
+                is_ack = 'ack'
                 if self.pkt.get_ack_num() == 1:
                     self.state = FSM.STATE_ONE
             else:
-                is_ack = 'NACK'
+                is_ack = 'nack'
 
             self.make_pkt(is_ack)
             return self.send_ack()
@@ -52,7 +54,3 @@ class ReceiverClass:
     def force_nack(self, fake_payload):
         self.pkt.set_payload(fake_payload)
 
-
-send = SenderClass("Mensage completa da Alice para o Bob")
-send.make_pkt()
-receiver = ReceiverClass(send.last_pkt)

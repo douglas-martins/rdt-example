@@ -1,10 +1,10 @@
 import threading
-from threading import Thread
 import time
+from threading import Thread
 
 from rdt_packet import RdtPacket
-from sender import SenderClass
-from receiver import ReceiverClass
+from tres.sender import SenderClass
+from dois.receiver import ReceiverClass
 
 check = threading.Condition()
 packet = None
@@ -37,7 +37,7 @@ def default_receiver():
     check.acquire()
     check.wait()
 
-    receiver = ReceiverClass(packet)
+    receiver.set_pkt(packet)
     bob_rcv = receiver.finite_machine()
 
     check.notify()
@@ -53,7 +53,7 @@ def alice_routine():
 
     check.acquire()
     check.wait()
-
+    time.sleep(10)
     default_sender() # Faz o primeiro pacote e envia
 
     default_sender() # Recebe o pacote de resposta de quem recebeu
@@ -65,7 +65,6 @@ def alice_routine():
     default_sender() # Faz o segundo pacote e envia
 
     default_sender()  # Faz o segundo pacote e envia
-
 
 
 def bob_routine():
@@ -105,4 +104,5 @@ def bob_routine():
 
 
 Thread(target=alice_routine).start()
+time.sleep(1)
 Thread(target=bob_routine).start()

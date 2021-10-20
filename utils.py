@@ -25,8 +25,7 @@ def ones_complement(binary_str: str):
 
 def validate_pkt(pkt_to_validate: RdtPacket) -> bool:
     cs = check_sum(pkt_to_validate.get_payload())
-    print(cs)
-    print(pkt_to_validate.get_check_sum())
+
     for a in range(0, len(cs)):
         x = int(cs[a])
         y = int(pkt_to_validate.get_check_sum()[a])
