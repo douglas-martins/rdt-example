@@ -82,32 +82,37 @@ def bob_routine():
     receiver = ReceiverClass(packet)
 
     receiver.report()
-    bob_rcv = receiver.finite_machine()  # Recebe o pacote (ack 0) e envia 2_1 ack ou nack dependendo do que recebeu
-    receiver.report()
-
-    check.notify()
-    check.release()
-
-    default_receiver()  # Recebe o pacote (ack 1) e envia 2_1 ack ou nack dependendo do que recebeu
-
-    check.acquire()
-    check.wait()
-
-    receiver.force_nack("teste")
+    # Recebe o pacote (ack 0) e envia ack ou nack dependendo do que recebeu
     bob_rcv = receiver.finite_machine()
     receiver.report()
 
     check.notify()
     check.release()
 
+    # Recebe o pacote (ack 1) e envia ack ou nack dependendo do que recebeu
     default_receiver()
 
-    default_receiver()
+    check.acquire()
+    check.wait()
 
-    default_receiver()
+    # Forçamos um NACK para simulação, alterando o pacote payload do pacote para teste
+    receiver.force_nack("teste")
 
-    default_receiver()
+    # Envia um NACK para que o pacote sejá reenviado
+    bob_rcv = receiver.finite_machine()
+    receiver.report()
 
+    check.notify()
+    check.release()
+    # Recebe o pacote (ack 0) e envia ack ou nack dependendo do que recebeu
+    default_receiver()
+    # Recebe o pacote (ack 1) e envia ack ou nack dependendo do que recebeu
+    default_receiver()
+    # Recebe o pacote (ack 0) e envia ack ou nack dependendo do que recebeu
+    default_receiver()
+    # Recebe o pacote (ack 1) e envia ack ou nack dependendo do que recebeu
+    default_receiver()
+    # Recebe o pacote (ack 0) e envia ack ou nack dependendo do que recebeu
     default_receiver()
 
 
